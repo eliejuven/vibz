@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Outputs / artifacts
+backend/outputs/
+*.wav
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.next/
