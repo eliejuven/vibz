@@ -9,6 +9,10 @@ from pydantic import BaseModel, Field
 
 from musicgen_engine import MusicGenEngine
 
+from fastapi import File, Form, UploadFile
+from openai_vision import describe_image_for_music
+from prompt_composer import compose_musicgen_prompt
+
 app = FastAPI(title="Vibz MusicGen API", version="0.1.0")
 
 # Load model once at startup (baseline)
@@ -67,6 +71,51 @@ def generate_from_text(req: GenerateTextRequest):
     download_url=f"/audio/{result.audio_id}.wav",
     meta_url=f"/meta/{result.audio_id}.json",
 )
+
+
+@app.post("/generate", response_model=GenerateResponse)
+async def generate(
+    model_type: Literal["baseline", "finetuned"] = Form("baseline"),
+    duration_sec: int = Form(30),
+    temperature: float = Form(1.0),
+    top_k: int = Form(250),
+    seed: Optional[int] = Form(None),
+    text_prompt: str = Form(""),
+    image: Optional[UploadFile] = File(None),
+):
+    if ENGINE is None:
+        raise HTTPException(status_code=500, detail="engine not initialized")
+
+    if not (20 <= int(duration_sec) <= 45):
+        raise HTTPException(status_code=400, detail="duration_sec must be between 20 and 45")
+
+    if model_type == "finetuned":
+        raise HTTPException(status_code=501, detail="finetuned model not available yet")
+
+    image_desc = ""
+    if image is not None:
+        image_bytes = await image.read()
+        if not image.content_type or not image.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Uploaded file is not an image")
+        image_desc = describe_image_for_music(image_bytes, image.content_type, user_prompt=text_prompt)
+
+    final_prompt = compose_musicgen_prompt(text_prompt, image_desc)
+
+    result = ENGINE.generate_wav(
+        prompt=final_prompt,
+        duration_sec=duration_sec,
+        temperature=temperature,
+        top_k=top_k,
+        seed=seed,
+    )
+
+    return GenerateResponse(
+        audio_id=result.audio_id,
+        used_prompt=result.used_prompt,
+        sample_rate=result.sample_rate,
+        download_url=f"/audio/{result.audio_id}.wav",
+        meta_url=f"/meta/{result.audio_id}.json",
+    )
 
 
 @app.get("/audio/{filename}")
