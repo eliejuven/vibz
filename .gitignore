@@ -16,3 +16,7 @@ node_modules/
 dist/
 build/
 .next/
+
+# Environment variables
+.env
+backend/.env

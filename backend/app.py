@@ -13,6 +13,10 @@ from fastapi import File, Form, UploadFile
 from openai_vision import describe_image_for_music
 from prompt_composer import compose_musicgen_prompt
 
+import tempfile
+
+from openai_audio import transcribe_audio_file, analyze_voice_emotion_from_wav_bytes
+
 app = FastAPI(title="Vibz MusicGen API", version="0.1.0")
 
 # Load model once at startup (baseline)
@@ -82,6 +86,7 @@ async def generate(
     seed: Optional[int] = Form(None),
     text_prompt: str = Form(""),
     image: Optional[UploadFile] = File(None),
+    voice: Optional[UploadFile] = File(None),
 ):
     if ENGINE is None:
         raise HTTPException(status_code=500, detail="engine not initialized")
@@ -99,7 +104,37 @@ async def generate(
             raise HTTPException(status_code=400, detail="Uploaded file is not an image")
         image_desc = describe_image_for_music(image_bytes, image.content_type, user_prompt=text_prompt)
 
-    final_prompt = compose_musicgen_prompt(text_prompt, image_desc)
+    voice_transcript = ""
+    voice_emotion_desc = ""
+
+    if voice is not None:
+        if not voice.content_type or not voice.content_type.startswith("audio/"):
+            raise HTTPException(status_code=400, detail="Uploaded voice file is not audio")
+
+    voice_bytes = await voice.read()
+
+    # MVP constraint: only WAV for now
+    if voice.content_type not in ("audio/wav", "audio/x-wav"):
+        raise HTTPException(
+            status_code=400,
+            detail="For v1, voice must be a WAV file (audio/wav)."
+        )
+
+    # 1) Prosody-based emotion analysis
+    voice_emotion_desc = analyze_voice_emotion_from_wav_bytes(voice_bytes)
+
+    # 2) Optional transcript for narrative
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=True) as tmp:
+        tmp.write(voice_bytes)
+        tmp.flush()
+        voice_transcript = transcribe_audio_file(tmp.name)
+
+    final_prompt = compose_musicgen_prompt(
+    text_prompt,
+    image_desc,
+    voice_emotion_desc=voice_emotion_desc,
+    voice_transcript=voice_transcript,
+    )
 
     result = ENGINE.generate_wav(
         prompt=final_prompt,
