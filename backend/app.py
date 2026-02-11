@@ -39,11 +39,12 @@ class GenerateResponse(BaseModel):
     download_url: str
     meta_url: str
 
-@app.on_event("startup")
-def _startup() -> None:
+def _get_engine() -> MusicGenEngine:
     global ENGINE
-    outputs_dir = os.path.join(os.path.dirname(__file__), "outputs")
-    ENGINE = MusicGenEngine(outputs_dir=outputs_dir)
+    if ENGINE is None:
+        outputs_dir = os.path.join(os.path.dirname(__file__), "outputs")
+        ENGINE = MusicGenEngine(outputs_dir=outputs_dir)
+    return ENGINE
 
 
 @app.get("/health")
@@ -57,10 +58,9 @@ def generate_from_text(req: GenerateTextRequest):
         # We’ll implement this later when we have LoRA weights.
         raise HTTPException(status_code=501, detail="finetuned model not available yet")
 
-    if ENGINE is None:
-        raise HTTPException(status_code=500, detail="engine not initialized")
+    engine = _get_engine()
 
-    result = ENGINE.generate_wav(
+    result = engine.generate_wav(
         prompt=req.prompt,
         duration_sec=req.duration_sec,
         temperature=req.temperature,
@@ -69,12 +69,12 @@ def generate_from_text(req: GenerateTextRequest):
     )
 
     return GenerateResponse(
-    audio_id=result.audio_id,
-    used_prompt=result.used_prompt,
-    sample_rate=result.sample_rate,
-    download_url=f"/audio/{result.audio_id}.wav",
-    meta_url=f"/meta/{result.audio_id}.json",
-)
+        audio_id=result.audio_id,
+        used_prompt=result.used_prompt,
+        sample_rate=result.sample_rate,
+        download_url=f"/audio/{result.audio_id}.wav",
+        meta_url=f"/meta/{result.audio_id}.json",
+    )
 
 
 @app.post("/generate", response_model=GenerateResponse)
@@ -88,8 +88,7 @@ async def generate(
     image: Optional[UploadFile] = File(None),
     voice: Optional[UploadFile] = File(None),
 ):
-    if ENGINE is None:
-        raise HTTPException(status_code=500, detail="engine not initialized")
+    engine = _get_engine()
 
     if not (20 <= int(duration_sec) <= 45):
         raise HTTPException(status_code=400, detail="duration_sec must be between 20 and 45")
@@ -111,32 +110,29 @@ async def generate(
         if not voice.content_type or not voice.content_type.startswith("audio/"):
             raise HTTPException(status_code=400, detail="Uploaded voice file is not audio")
 
-    voice_bytes = await voice.read()
+        voice_bytes = await voice.read()
 
-    # MVP constraint: only WAV for now
-    if voice.content_type not in ("audio/wav", "audio/x-wav"):
-        raise HTTPException(
-            status_code=400,
-            detail="For v1, voice must be a WAV file (audio/wav)."
-        )
+        if voice.content_type not in ("audio/wav", "audio/x-wav"):
+            raise HTTPException(
+                status_code=400,
+                detail="For v1, voice must be a WAV file (audio/wav)."
+            )
 
-    # 1) Prosody-based emotion analysis
-    voice_emotion_desc = analyze_voice_emotion_from_wav_bytes(voice_bytes)
+        voice_emotion_desc = analyze_voice_emotion_from_wav_bytes(voice_bytes)
 
-    # 2) Optional transcript for narrative
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=True) as tmp:
-        tmp.write(voice_bytes)
-        tmp.flush()
-        voice_transcript = transcribe_audio_file(tmp.name)
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=True) as tmp:
+            tmp.write(voice_bytes)
+            tmp.flush()
+            voice_transcript = transcribe_audio_file(tmp.name)
 
     final_prompt = compose_musicgen_prompt(
-    text_prompt,
-    image_desc,
-    voice_emotion_desc=voice_emotion_desc,
-    voice_transcript=voice_transcript,
+        text_prompt,
+        image_desc,
+        voice_emotion_desc=voice_emotion_desc,
+        voice_transcript=voice_transcript,
     )
 
-    result = ENGINE.generate_wav(
+    result = engine.generate_wav(
         prompt=final_prompt,
         duration_sec=duration_sec,
         temperature=temperature,
