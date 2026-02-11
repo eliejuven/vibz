@@ -4,8 +4,7 @@ version = "0.1.0"
 description = "Vibz MusicGen API"
 requires-python = ">=3.12"
 dependencies = [
-    "accelerate>=0.20.0",
-    "fastapi==0.115.6",
+    "fastapi>=0.115,<1",
     "numpy>=1.26,<3",
     "openai>=1.40.0",
     "python-dotenv>=1.0.1",
@@ -13,7 +12,7 @@ dependencies = [
     "scipy>=1.11,<2",
     "torch",
     "transformers",
-    "uvicorn[standard]==0.32.1",
+    "uvicorn[standard]>=0.32,<1",
 ]
 
 [[tool.uv.index]]
