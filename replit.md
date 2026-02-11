@@ -4,7 +4,7 @@
 A FastAPI-based music generation API using Facebook's MusicGen model. Generates 20-45 second instrumental music from text prompts, images, and voice inputs.
 
 ## Project Architecture
-- **Language**: Python 3.12
+- **Language**: Python 3.11
 - **Framework**: FastAPI + Uvicorn
 - **ML Model**: facebook/musicgen-small (loaded lazily on first generation request)
 - **External APIs**: OpenAI (for image description and voice transcription/emotion analysis)
