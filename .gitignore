@@ -5,7 +5,7 @@
 __pycache__/
 *.pyc
 .venv/
-.env
+.pythonlibs/
 
 # Outputs / artifacts
 backend/outputs/
@@ -13,7 +13,7 @@ backend/outputs/
 
 # Node / frontend
 node_modules/
-dist/
+frontend/dist/
 build/
 .next/
 

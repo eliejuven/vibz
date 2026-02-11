@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Literal, Optional
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from musicgen_engine import MusicGenEngine
@@ -18,6 +20,8 @@ import tempfile
 from openai_audio import transcribe_audio_file, analyze_voice_emotion_from_wav_bytes
 
 app = FastAPI(title="Vibz MusicGen API", version="0.1.0")
+
+FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 
 # Load model once at startup (baseline)
 ENGINE: Optional[MusicGenEngine] = None
@@ -112,10 +116,11 @@ async def generate(
 
         voice_bytes = await voice.read()
 
-        if voice.content_type not in ("audio/wav", "audio/x-wav"):
+        allowed_audio = ("audio/wav", "audio/x-wav", "audio/webm", "audio/ogg", "audio/mpeg", "audio/mp4")
+        if voice.content_type not in allowed_audio:
             raise HTTPException(
                 status_code=400,
-                detail="For v1, voice must be a WAV file (audio/wav)."
+                detail=f"Unsupported audio format: {voice.content_type}"
             )
 
         voice_emotion_desc = analyze_voice_emotion_from_wav_bytes(voice_bytes)
@@ -180,3 +185,14 @@ def get_meta(filename: str):
         media_type="application/json",
         filename=filename,
     )
+
+
+if FRONTEND_DIST.exists():
+    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="static")
+
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        file_path = FRONTEND_DIST / full_path
+        if full_path and file_path.exists() and file_path.is_file():
+            return FileResponse(str(file_path))
+        return FileResponse(str(FRONTEND_DIST / "index.html"))
