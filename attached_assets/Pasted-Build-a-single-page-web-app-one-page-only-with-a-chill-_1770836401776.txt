@@ -1,0 +1,54 @@
+Build a single-page web app (one page only) with a chill, premium, modern aesthetic: soft gradient background, subtle grain/noise feel, rounded glassmorphism cards, smooth shadows, and a calming color palette (blue/purple/teal). The UI should feel like a music / wellness product.
+
+Core layout
+	•	Full-screen centered container (max width ~900px).
+	•	Top: title “Vibz” + short subtitle “Turn moments into music”.
+	•	Main card: a ChatGPT-style input bar at the bottom of the card:
+	•	A multiline text prompt input (like ChatGPT composer).
+	•	On the left of the input bar: icons/buttons for:
+	•	Upload image (accept image/*)
+	•	Upload voice (accept audio/*)
+	•	Record voice (in-browser microphone recording to WAV; if WAV is hard, record to webm and upload anyway)
+	•	On the right: a circular Send button (paper plane icon) that triggers generation.
+	•	Above the input bar, show generation controls:
+	•	Dropdown: Model selection (Baseline / Fine-tuned). Fine-tuned can be disabled for now.
+	•	Duration slider: 20–45 seconds (default 30).
+	•	Under the card: an output area that displays:
+	•	A loading spinner while generating
+	•	When done: an audio player (HTML5 <audio controls>) that plays the returned track immediately
+	•	A “Download” button for the WAV
+	•	A collapsible “Debug” section showing the used_prompt and metadata JSON URL
+
+Backend integration
+	•	The backend is a FastAPI server with:
+	•	POST /generate expecting multipart/form-data
+	•	fields:
+	•	model_type (“baseline” or “finetuned”)
+	•	duration_sec (int)
+	•	temperature (float, default 1.0)
+	•	top_k (int, default 250)
+	•	seed (optional int)
+	•	text_prompt (string)
+	•	optional file image
+	•	optional file voice
+	•	Response JSON:
+	•	audio_id, used_prompt, sample_rate, download_url, meta_url
+	•	Implement the frontend request as FormData:
+	•	Always include model_type, duration_sec, temperature, top_k, text_prompt
+	•	Only append image if user selected an image
+	•	Only append voice if user selected or recorded audio
+	•	The server returns relative URLs (/audio/<id>.wav), so the frontend must build full URLs using the same origin as the API base URL.
+	•	Put the API base URL in a configurable constant (e.g. const API_BASE_URL = "https://YOUR-REPL-URL";) and make it easy to change.
+
+UX requirements
+	•	Works on mobile (responsive).
+	•	Smooth transitions/animations (subtle).
+	•	Clear error messages (e.g. missing input, API failure).
+	•	Do not submit if both text prompt is empty AND no image AND no voice.
+	•	After generation completes, auto-scroll to the audio player.
+
+Tech requirements
+	•	Use a modern stack (React + Vite preferred, or Next.js). Tailwind CSS for styling.
+	•	Keep everything in one page (single route).
+	•	No authentication.
+	•	Provide the full code.
