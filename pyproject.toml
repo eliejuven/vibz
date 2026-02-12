@@ -11,14 +11,6 @@ dependencies = [
     "python-multipart>=0.0.9",
     "scipy>=1.11,<2",
     "torch",
-    "transformers==4.46.3",
+    "transformers>=4.40,<5",
     "uvicorn[standard]>=0.32,<1",
 ]
-
-[[tool.uv.index]]
-explicit = true
-name = "pytorch-cpu"
-url = "https://download.pytorch.org/whl/cpu"
-
-[tool.uv.sources]
-torch = [{ index = "pytorch-cpu" }]
