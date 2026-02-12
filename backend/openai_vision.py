@@ -25,10 +25,7 @@ def image_bytes_to_data_url(image_bytes: bytes, mime_type: str) -> str:
 
 
 def describe_image_for_music(image_bytes: bytes, mime_type: str, user_prompt: str = "") -> str:
-    """
-    Returns a compact description optimized to become a MusicGen prompt ingredient.
-    """
-    model = os.environ.get("OPENAI_VISION_MODEL", "gpt-4.1-mini")
+    model = os.environ.get("OPENAI_VISION_MODEL", "gpt-4o-mini")
     data_url = image_bytes_to_data_url(image_bytes, mime_type)
 
     instruction = (
@@ -41,19 +38,18 @@ def describe_image_for_music(image_bytes: bytes, mime_type: str, user_prompt: st
         "Keep it concise (max ~80 words). No lists longer than 4 items.\n"
     )
 
-    # Responses API supports text + image inputs in one request.
-    # We ask for plain text output we can blend into MusicGen prompts.
-    resp = _client().responses.create(
+    resp = _client().chat.completions.create(
         model=model,
-        input=[
+        messages=[
             {
                 "role": "user",
                 "content": [
-                    {"type": "input_text", "text": instruction},
-                    {"type": "input_text", "text": f"User theme (optional): {user_prompt.strip() or 'N/A'}"},
-                    {"type": "input_image", "image_url": data_url},
+                    {"type": "text", "text": instruction},
+                    {"type": "text", "text": f"User theme (optional): {user_prompt.strip() or 'N/A'}"},
+                    {"type": "image_url", "image_url": {"url": data_url}},
                 ],
             }
         ],
+        max_tokens=200,
     )
-    return (resp.output_text or "").strip()
+    return (resp.choices[0].message.content or "").strip()
