@@ -111,7 +111,12 @@ async def generate(
         image_bytes = await image.read()
         if not image.content_type or not image.content_type.startswith("image/"):
             raise HTTPException(status_code=400, detail="Uploaded file is not an image")
-        image_desc = describe_image_for_music(image_bytes, image.content_type, user_prompt=text_prompt)
+        try:
+            image_desc = describe_image_for_music(image_bytes, image.content_type, user_prompt=text_prompt)
+        except Exception as exc:
+            import traceback
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=f"Image analysis failed: {exc}")
 
     voice_transcript = ""
     voice_emotion_desc = ""

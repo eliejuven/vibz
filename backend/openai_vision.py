@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import io
 import os
 from typing import Optional
 
@@ -19,12 +20,34 @@ def _client() -> OpenAI:
     return _CLIENT
 
 
+def _convert_to_jpeg(image_bytes: bytes, mime_type: str) -> tuple[bytes, str]:
+    SUPPORTED = {"image/png", "image/jpeg", "image/gif", "image/webp"}
+    if mime_type in SUPPORTED:
+        return image_bytes, mime_type
+
+    from PIL import Image
+    try:
+        if mime_type in ("image/heic", "image/heif"):
+            import pillow_heif
+            pillow_heif.register_heif_opener()
+
+        img = Image.open(io.BytesIO(image_bytes))
+        img = img.convert("RGB")
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=85)
+        return buf.getvalue(), "image/jpeg"
+    except Exception as exc:
+        raise ValueError(f"Cannot convert {mime_type} image: {exc}") from exc
+
+
 def image_bytes_to_data_url(image_bytes: bytes, mime_type: str) -> str:
     b64 = base64.b64encode(image_bytes).decode("utf-8")
     return f"data:{mime_type};base64,{b64}"
 
 
 def describe_image_for_music(image_bytes: bytes, mime_type: str, user_prompt: str = "") -> str:
+    image_bytes, mime_type = _convert_to_jpeg(image_bytes, mime_type)
+
     model = os.environ.get("OPENAI_VISION_MODEL", "gpt-4o-mini")
     data_url = image_bytes_to_data_url(image_bytes, mime_type)
 
