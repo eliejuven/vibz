@@ -17,6 +17,8 @@ from prompt_composer import compose_musicgen_prompt
 
 import tempfile
 
+import threading
+
 from openai_audio import transcribe_audio_file, analyze_voice_emotion_from_wav_bytes
 
 app = FastAPI(title="Vibz MusicGen API", version="0.1.0")
@@ -43,13 +45,17 @@ class GenerateResponse(BaseModel):
     download_url: str
     meta_url: str
 
+ENGINE: Optional[MusicGenEngine] = None
+_ENGINE_LOCK = threading.Lock()
+
 def _get_engine() -> MusicGenEngine:
     global ENGINE
     if ENGINE is None:
-        outputs_dir = os.path.join(os.path.dirname(__file__), "outputs")
-        ENGINE = MusicGenEngine(outputs_dir=outputs_dir)
+        with _ENGINE_LOCK:
+            if ENGINE is None:
+                outputs_dir = os.path.join(os.path.dirname(__file__), "outputs")
+                ENGINE = MusicGenEngine(outputs_dir=outputs_dir)
     return ENGINE
-
 
 @app.get("/health")
 def health():
@@ -116,7 +122,7 @@ async def generate(
 
         voice_bytes = await voice.read()
 
-        allowed_audio = ("audio/wav", "audio/x-wav", "audio/webm", "audio/ogg", "audio/mpeg", "audio/mp4")
+        allowed_audio = ("audio/wav", "audio/x-wav")
         if voice.content_type not in allowed_audio:
             raise HTTPException(
                 status_code=400,

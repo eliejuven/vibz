@@ -45,8 +45,17 @@ class MusicGenEngine:
             device = "cuda" if torch.cuda.is_available() else "cpu"
         self.device = device
 
-        self.processor = AutoProcessor.from_pretrained(self.model_id)
-        self.model = MusicgenForConditionalGeneration.from_pretrained(self.model_id)
+        hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACEHUB_API_TOKEN")
+
+        self.processor = AutoProcessor.from_pretrained(
+        self.model_id,
+        token=hf_token,
+        )
+
+        self.model = MusicgenForConditionalGeneration.from_pretrained(
+        self.model_id,
+        token=hf_token,
+        )
         self.model.to(self.device)
         self.model.eval()
 
