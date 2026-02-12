@@ -1,0 +1,160 @@
+2026-02-12 14:57:29.22
+f322259f
+User
+"no_repeat_ngram_size": 3,
+2026-02-12 14:57:29.22
+f322259f
+User
+"max_length": 300,
+2026-02-12 14:57:29.22
+f322259f
+User
+"is_gated_act": false,
+2026-02-12 14:57:29.22
+f322259f
+User
+"prefix": "summarize: "
+2026-02-12 14:57:29.22
+f322259f
+User
+"d_ff": 3072,
+2026-02-12 14:57:29.22
+f322259f
+User
+}
+2026-02-12 14:57:29.22
+f322259f
+User
+"architectures": [
+2026-02-12 14:57:29.22
+f322259f
+User
+"T5ForConditionalGeneration"
+2026-02-12 14:57:29.22
+f322259f
+User
+"early_stopping": true,
+2026-02-12 14:57:29.22
+f322259f
+User
+"is_encoder_decoder": true,
+2026-02-12 14:57:29.22
+f322259f
+User
+],
+2026-02-12 14:57:29.22
+f322259f
+User
+"dense_act_fn": "relu",
+2026-02-12 14:57:29.22
+f322259f
+User
+"decoder_start_token_id": 0,
+2026-02-12 14:57:29.22
+f322259f
+User
+"_name_or_path": "t5-base",
+2026-02-12 14:57:29.22
+f322259f
+User
+"dropout_rate": 0.1,
+2026-02-12 14:57:29.22
+f322259f
+User
+"num_beams": 4,
+2026-02-12 14:57:29.22
+f322259f
+User
+"min_length": 30,
+2026-02-12 14:57:29.22
+f322259f
+User
+"_name_or_path": "t5-base",
+2026-02-12 14:57:29.22
+f322259f
+User
+"n_positions": 512,
+2026-02-12 14:57:29.22
+f322259f
+User
+},
+2026-02-12 14:57:29.22
+f322259f
+User
+"d_model": 768,
+2026-02-12 14:57:29.22
+f322259f
+User
+"vocab_size": 32128
+2026-02-12 14:57:29.22
+f322259f
+User
+"eos_token_id": 1,
+2026-02-12 14:57:29.22
+f322259f
+User
+"early_stopping": true,
+2026-02-12 14:57:29.22
+f322259f
+User
+"translation_en_to_de": {
+2026-02-12 14:57:29.22
+f322259f
+User
+"max_length": 200,
+2026-02-12 14:57:29.22
+f322259f
+User
+"layer_norm_epsilon": 1e-06,
+2026-02-12 14:57:29.22
+f322259f
+User
+"early_stopping": true,
+2026-02-12 14:57:29.22
+f322259f
+User
+},
+2026-02-12 14:57:29.22
+f322259f
+User
+"d_ff": 3072,
+2026-02-12 14:57:29.22
+f322259f
+User
+"decoder_start_token_id": 0,
+2026-02-12 14:57:29.22
+f322259f
+User
+"feed_forward_proj": "relu",
+2026-02-12 14:57:29.22
+f322259f
+User
+"_name_or_path": "facebook/encodec_32khz",
+2026-02-12 14:57:29.22
+f322259f
+User
+],
+2026-02-12 14:57:29.22
+f322259f
+User
+"audio_channels": 1,
+2026-02-12 14:57:29.22
+f322259f
+User
+"codebook_size": 2048,
+2026-02-12 14:57:29.22
+f322259f
+User
+"architectures": [
+2026-02-12 14:57:29.22
+f322259f
+User
+"EncodecModel"
+2026-02-12 14:57:30.29
+f322259f
+User
+`torch.nn.functional.scaled_dot_product_attention` does not support having an empty attention mask. Falling back to the manual attention implementation. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.Note that this probably happens because `guidance_scale>1` or because you used `get_unconditional_inputs`. See https://github.com/huggingface/transformers/issues/31189 for more information.
+2026-02-12 14:57:30.29
+f322259f
+User
+`torch.nn.functional.scaled_dot_product_attention` does not support having an empty attention mask. Falling back to the manual attention implementation. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.Note that this probably happens because `guidance_scale>1` or because you used `get_unconditional_inputs`. See https://github.com/huggingface/transformers/issues/31189 for more information.
