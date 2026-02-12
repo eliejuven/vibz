@@ -42,4 +42,4 @@ exposeLocalhost = true
 [deployment]
 deploymentTarget = "autoscale"
 run = ["bash", "-lc", "cd backend && uvicorn app:app --host 0.0.0.0 --port 5000"]
-build = ["bash", "-lc", "python -m pip install --upgrade pip setuptools wheel && pip install -r backend/requirements.txt && cd frontend && npm install && npm run build"]
+build = ["bash", "-lc", "python -m pip install --upgrade pip setuptools wheel && pip install -r backend/requirements.txt -i https://pypi.org/simple --extra-index-url https://download.pytorch.org/whl/cpu && python -c \"import transformers; print('transformers:', transformers.__version__)\" && cd frontend && npm install && npm run build"]
