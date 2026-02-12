@@ -1,0 +1,160 @@
+2026-02-12 11:13:26.49
+76c732c0
+User
+await app(scope, receive, sender)
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/routing.py", line 288, in handle
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+2026-02-12 11:13:26.49
+76c732c0
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+2026-02-12 11:13:26.49
+76c732c0
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/middleware/errors.py", line 187, in __call__
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+2026-02-12 11:13:26.49
+76c732c0
+User
+image_desc = describe_image_for_music(image_bytes, image.content_type, user_prompt=text_prompt)
+2026-02-12 11:13:26.49
+76c732c0
+User
+raw_response = await run_endpoint_function(
+2026-02-12 11:13:26.49
+76c732c0
+User
+await app(scope, receive, sender)
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/applications.py", line 113, in __call__
+2026-02-12 11:13:26.49
+76c732c0
+User
+return await self.app(scope, receive, send)
+2026-02-12 11:13:26.49
+76c732c0
+User
+await route.handle(scope, receive, send)
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+2026-02-12 11:13:26.49
+76c732c0
+User
+response = await f(request)
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/routing.py", line 76, in app
+2026-02-12 11:13:26.49
+76c732c0
+User
+Traceback (most recent call last):
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+2026-02-12 11:13:26.49
+76c732c0
+User
+return self._post(
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/routing.py", line 73, in app
+2026-02-12 11:13:26.49
+76c732c0
+User
+result = await app( # type: ignore[func-returns-value]
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/middleware/errors.py", line 165, in __call__
+2026-02-12 11:13:26.49
+76c732c0
+User
+await self.app(scope, receive, _send)
+2026-02-12 11:13:26.49
+76c732c0
+User
+return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/backend/openai_vision.py", line 46, in describe_image_for_music
+2026-02-12 11:13:26.49
+76c732c0
+User
+ERROR: Exception in ASGI application
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+2026-02-12 11:13:26.49
+76c732c0
+User
+ERROR: Exception in ASGI application
+2026-02-12 11:13:26.49
+76c732c0
+User
+raise exc
+2026-02-12 11:13:26.49
+76c732c0
+User
+await self.middleware_stack(scope, receive, send)
+2026-02-12 11:13:26.49
+76c732c0
+User
+raise exc
+2026-02-12 11:13:26.49
+76c732c0
+User
+resp = _client().responses.create(
+2026-02-12 11:13:26.49
+76c732c0
+User
+^^^^^^^^^^^^^^^^
+2026-02-12 11:13:26.49
+76c732c0
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/starlette/applications.py", line 113, in __call__
+2026-02-12 11:13:26.49
+76c732c0
+User
+await super().__call__(scope, receive, send)
