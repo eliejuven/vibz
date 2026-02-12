@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 import time
 import uuid
 from dataclasses import dataclass
