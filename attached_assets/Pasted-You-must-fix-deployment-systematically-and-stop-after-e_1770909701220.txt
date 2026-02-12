@@ -1,0 +1,64 @@
+You must fix deployment systematically and stop after each step to verify with the exact commands I specify. Current deploy errors show:
+	•	transformers{sys_platform=='linux'}==4.46.3 is being required, which is unsatisfiable.
+	•	uv sync fails during dependency installation.
+	•	Build command is broken: missing && after bash -lc.
+
+Step 1 — Inspect and report the current config (no changes yet)
+	1.	Open and print the relevant parts of:
+
+	•	pyproject.toml (especially [project], dependencies, requires-python, and any [tool.uv] / sources/index blocks)
+	•	any uv.lock / lockfile if present
+	•	the deployment/build command configuration (where bash -lc cd frontend ... is defined: .replit, replit.toml, deployment settings, etc.)
+
+Step 2 — Fix dependency markers and make requirements satisfiable
+	2.	In pyproject.toml, remove any platform markers attached to transformers like:
+
+	•	transformers; sys_platform == 'linux'
+	•	or transformers{sys_platform == 'linux'}
+Replace with a plain requirement:
+	•	transformers==4.46.3
+Do the same for any other deps with weird markers unless absolutely necessary.
+
+	3.	Tighten Python version for deployment stability:
+
+	•	set requires-python = ">=3.11,<3.12"
+
+Step 3 — Fix uv indexes/sources
+	4.	Ensure uv resolves general packages from PyPI.
+
+	•	If there is a custom pytorch-cpu or other index set as default, remove it as default.
+	•	Only allow torch-specific mapping if needed (torch can use a custom index), but transformers, accelerate, etc. must resolve from PyPI.
+
+Step 4 — Reset lock & reinstall cleanly
+	5.	Delete stale locks and caches that may preserve the bad marker:
+
+	•	remove uv.lock (and any other lockfile produced by uv)
+Then run (in this order):
+	•	uv lock --python 3.11
+	•	uv sync --python 3.11
+If any step fails, stop and show the full error output and the exact dependency line causing it.
+
+Step 5 — Fix the frontend build command
+	6.	Replace the broken build command with a single, correctly quoted command string:
+
+	•	bash -lc "cd frontend && npm ci && npm run build"
+If there is no package-lock.json, use:
+	•	bash -lc "cd frontend && npm install && npm run build"
+Make sure the command actually runs npm run build, not only cd.
+
+Step 6 — Final verification (must do all)
+	7.	Verify locally inside Replit:
+
+	•	python -c "import transformers; print(transformers.__version__)"
+	•	python -c "import torch; print(torch.__version__)"
+	•	uvicorn app:app --host 0.0.0.0 --port $PORT (ensure it binds and stays up)
+	•	open /health and /docs successfully
+
+Only after these checks pass, retry deployment.
+
+Important rules:
+	•	Do NOT add platform markers to transformers.
+	•	Do NOT make pytorch-cpu the default index for all packages.
+	•	If uv remains problematic, propose and implement the fallback: switch deployment install to pip using backend/requirements.txt and bypass uv entirely, then re-run the verification commands.
+
+Proceed step by step and report results after each step.

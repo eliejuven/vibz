@@ -21,4 +21,4 @@ name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 
 [tool.uv.sources]
-torch = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
+torch = [{ index = "pytorch-cpu" }]
